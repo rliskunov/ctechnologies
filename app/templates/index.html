@@ -4,13 +4,21 @@
 {% block content %}
     <div class="bg-light p-5 rounded">
         <h1>Декоратор</h1>
-        <p class="lead">{{ decorator | safe  }} </p>
+        <ul>
+            Мониторинг параметров сервера (CPU, Memory):
+            <li>Hostname - компонент</li>
+            <li>CPU и Memory - декораторы</li>
+        </ul>
+        <p class="lead">{{ decorator | safe }} </p>
     </div>
     <br/>
     <div class="bg-light p-5 rounded">
         <h1>Мост</h1>
-        <p class="lead">{{ bridgeA | safe }}</p>
-        <br/>
-        <p class="lead">{{ bridgeB | safe }}</p>
+        <ul>В зависимости от ОС получаем текущую и домашнюю директории. Основные платформы:
+            <li>Windows</li>
+            <li>Linux</li>
+            <li>macOS</li>
+        </ul>
+        <p class="lead">{{ bridge | safe }}</p>
     </div>
 {% endblock %}

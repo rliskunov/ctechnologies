@@ -1,8 +1,10 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
+from pathlib import Path
+import platform
 
 
-class Abstraction:
+class OperationSystem:
     """
     Абстракция устанавливает интерфейс для «управляющей» части двух иерархий
     классов. Она содержит ссылку на объект из иерархии Реализации и делегирует
@@ -13,16 +15,25 @@ class Abstraction:
         self.implementation = implementation
 
     def operation(self) -> str:
-        return f"Abstraction: Base operation with:\n {self.implementation.operation_implementation()}"
+        return f"Platform: {platform.system()}\n\t{self.implementation.operation_implementation()}"
 
 
-class ExtendedAbstraction(Abstraction):
+class Mac(OperationSystem):
     """
     Можно расширить Абстракцию без изменения классов Реализации.
     """
 
     def operation(self) -> str:
-        return f"ExtendedAbstraction: Extended operation with:\n {self.implementation.operation_implementation()}"
+        return f"\n\t{self.implementation.operation_implementation()}"
+
+
+class Windows(OperationSystem):
+    """
+    Можно расширить Абстракцию без изменения классов Реализации.
+    """
+
+    def operation(self) -> str:
+        return f"Platform: Windows\n\t{self.implementation.operation_implementation()}"
 
 
 class Implementation(ABC):
@@ -45,17 +56,17 @@ class Implementation(ABC):
 """
 
 
-class ConcreteImplementationA(Implementation):
-    def operation_implementation(self) -> str:
-        return "ConcreteImplementationA: Here's the result on the platform A."
+class HomeDirectory(Implementation):
+    def operation_implementation(self) -> Path:
+        return Path.cwd()
 
 
-class ConcreteImplementationB(Implementation):
-    def operation_implementation(self) -> str:
-        return "ConcreteImplementationB: Here's the result on the platform B."
+class CurrentDirectory(Implementation):
+    def operation_implementation(self) -> Path:
+        return Path.home()
 
 
-def client_code(abstraction: Abstraction) -> str:
+def client_code(abstraction: OperationSystem) -> str:
     """
     За исключением этапа инициализации, когда объект Абстракции связывается с
     определённым объектом Реализации, клиентский код должен зависеть только от
@@ -71,10 +82,10 @@ if __name__ == "__main__":
     комбинацией абстракции и реализации.
     """
 
-    implementation = ConcreteImplementationA()
-    abstraction = Abstraction(implementation)
+    implementation: HomeDirectory = HomeDirectory()
+    abstraction: OperationSystem = OperationSystem(implementation)
     print(client_code(abstraction))
 
-    implementation = ConcreteImplementationB()
-    abstraction = ExtendedAbstraction(implementation)
+    implementation: CurrentDirectory = CurrentDirectory()
+    abstraction: Windows = Windows(implementation)
     print(client_code(abstraction))
