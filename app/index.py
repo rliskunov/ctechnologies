@@ -1,40 +1,42 @@
 from flask import Flask, render_template
 
 from bridge import (
+    Abstraction,
     ConcreteImplementationA,
     ConcreteImplementationB,
-    Abstraction,
-    client_code,
     ExtendedAbstraction
 )
 from decorator import (
-    ConcreteComponent,
-    client_code,
-    ConcreteDecoratorA,
-    ConcreteDecoratorB
+    Hostname,
+    CPU,
+    Memory
 )
 
 app = Flask(__name__)
 
 
+def html(text: str) -> str:
+    return text.replace("\n", "<br/>").replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;")
+
+
 @app.route('/')
 def index():
-    simple: ConcreteComponent = ConcreteComponent()
-    decorator1: ConcreteDecoratorA = ConcreteDecoratorA(simple)
-    decorator2: ConcreteDecoratorB = ConcreteDecoratorB(decorator1)
-    decorator: str = client_code(decorator2)
+    hostname: Hostname = Hostname()
+    cpu: CPU = CPU(hostname)
+    memory: Memory = Memory(cpu)
+    metrics: str = memory.operation()
 
     implementation: ConcreteImplementationA = ConcreteImplementationA()
     abstraction: Abstraction = Abstraction(implementation)
-    bridgeA: str = client_code(abstraction)
+    bridgeA: str = abstraction.operation()
 
     implementation: ConcreteImplementationB = ConcreteImplementationB()
     abstraction: Abstraction = ExtendedAbstraction(implementation)
-    bridgeB: str = client_code(abstraction)
+    bridgeB: str = abstraction.operation()
 
     return render_template(
         'index.html',
-        decorator=decorator,
-        bridgeA=bridgeA,
-        bridgeB=bridgeB,
+        decorator=html(metrics),
+        bridgeA=html(bridgeA),
+        bridgeB=html(bridgeB),
     )

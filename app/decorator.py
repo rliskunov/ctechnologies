@@ -1,3 +1,8 @@
+from socket import gethostname
+
+import psutil
+
+
 class Component:
     """
     Базовый интерфейс Компонента определяет поведение, которое изменяется
@@ -8,14 +13,14 @@ class Component:
         pass
 
 
-class ConcreteComponent(Component):
+class Hostname(Component):
     """
     Конкретные Компоненты предоставляют реализации поведения по умолчанию. Может
     быть несколько вариаций этих классов.
     """
 
     def operation(self) -> str:
-        return "ConcreteComponent"
+        return f"Hostname: {gethostname()}"
 
 
 class Decorator(Component):
@@ -44,7 +49,7 @@ class Decorator(Component):
         return self._component.operation()
 
 
-class ConcreteDecoratorA(Decorator):
+class CPU(Decorator):
     """
     Конкретные Декораторы вызывают обёрнутый объект и изменяют его результат
     некоторым образом.
@@ -56,17 +61,28 @@ class ConcreteDecoratorA(Decorator):
         чтобы вызвать обёрнутый объект напрямую. Такой подход упрощает
         расширение классов декораторов.
         """
-        return f"ConcreteDecoratorA({self.component.operation()})"
+        return f"{self.component.operation()}" \
+               f"\nCPU:" \
+               f"\n\tCount: {psutil.cpu_count()}" \
+               f"\n\tUsage: {psutil.cpu_percent(interval=1)}"
 
 
-class ConcreteDecoratorB(Decorator):
+class Memory(Decorator):
     """
     Декораторы могут выполнять своё поведение до или после вызова обёрнутого
     объекта.
     """
 
     def operation(self) -> str:
-        return f"ConcreteDecoratorB({self.component.operation()})"
+        stats = psutil.virtual_memory()
+        total = stats.total
+        used = stats.used
+        used_percent = stats.percent
+        return f"{self.component.operation()}" \
+               f"\n Memory:" \
+               f"\n\tPercent: {used_percent}," \
+               f"\n\tTotal: {round(total / 1e+6, 3)}, MB" \
+               f"\n\tUsed: {round(used / 1e+6, 3)}, MB"
 
 
 def client_code(component: Component) -> str:
@@ -79,8 +95,8 @@ def client_code(component: Component) -> str:
 
 
 if __name__ == "__main__":
-    simple: ConcreteComponent = ConcreteComponent()
-    decorator1: ConcreteDecoratorA = ConcreteDecoratorA(simple)
-    decorator2: ConcreteDecoratorB = ConcreteDecoratorB(decorator1)
-    decorator: str = client_code(decorator2)
+    hostname: Hostname = Hostname()
+    cpu: CPU = CPU(hostname)
+    memory: Memory = Memory(cpu)
+    decorator: str = client_code(memory)
     print(decorator)

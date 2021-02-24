@@ -4,13 +4,13 @@
 {% block content %}
     <div class="bg-light p-5 rounded">
         <h1>Декоратор</h1>
-        <p class="lead">{{ decorator }}</p>
+        <p class="lead">{{ decorator | safe  }} </p>
     </div>
     <br/>
     <div class="bg-light p-5 rounded">
         <h1>Мост</h1>
-        <p class="lead">{{ bridgeA }}</p>
+        <p class="lead">{{ bridgeA | safe }}</p>
         <br/>
-        <p class="lead">{{ bridgeB }}</p>
+        <p class="lead">{{ bridgeB | safe }}</p>
     </div>
 {% endblock %}
