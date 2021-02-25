@@ -4,8 +4,8 @@ from flask import Flask, render_template
 
 from bridge import (
     OperationSystem,
-    HomeDirectory,
     CurrentDirectory,
+    HomeDirectory,
     Mac
 )
 from decorator import (
@@ -29,13 +29,13 @@ def index():
     metrics: str = memory.operation()
 
     if platform.system() == "Darwin":
-        home: Mac = Mac(HomeDirectory())
-        current: Mac = Mac(CurrentDirectory())
-        bridge: str = f"Home: {home.operation()}\nCurrent: {current.operation()}"
+        home: Mac = Mac(CurrentDirectory())
+        current: Mac = Mac(HomeDirectory())
+        bridge: str = f"{home.operation()}\n{current.operation()}"
     else:
-        home: OperationSystem = OperationSystem(HomeDirectory())
-        current: OperationSystem = OperationSystem(CurrentDirectory())
-        bridge: str = f"Home: {home.operation()}\nCurrent: {current.operation()}"
+        home: OperationSystem = OperationSystem(CurrentDirectory())
+        current: OperationSystem = OperationSystem(HomeDirectory())
+        bridge: str = f"{home.operation()}\n{current.operation()}"
 
     return render_template(
         'index.html',

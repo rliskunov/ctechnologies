@@ -15,7 +15,8 @@ class OperationSystem:
         self.implementation = implementation
 
     def operation(self) -> str:
-        return f"Platform: {platform.system()}\n\t{self.implementation.operation_implementation()}"
+        return f"Platform: {platform.system()}" \
+               f"\n\t{self.implementation.operation_implementation()}"
 
 
 class Mac(OperationSystem):
@@ -24,7 +25,8 @@ class Mac(OperationSystem):
     """
 
     def operation(self) -> str:
-        return f"\n\t{self.implementation.operation_implementation()}"
+        return f"Platform: {platform.system()}" \
+               f"\n\t{self.implementation.operation_implementation()}"
 
 
 class Windows(OperationSystem):
@@ -56,14 +58,14 @@ class Implementation(ABC):
 """
 
 
-class HomeDirectory(Implementation):
-    def operation_implementation(self) -> Path:
-        return Path.cwd()
-
-
 class CurrentDirectory(Implementation):
-    def operation_implementation(self) -> Path:
-        return Path.home()
+    def operation_implementation(self) -> str:
+        return f"Current: {Path.cwd()}"
+
+
+class HomeDirectory(Implementation):
+    def operation_implementation(self) -> str:
+        return f"Home: {Path.home()}"
 
 
 def client_code(abstraction: OperationSystem) -> str:
@@ -82,10 +84,10 @@ if __name__ == "__main__":
     комбинацией абстракции и реализации.
     """
 
-    implementation: HomeDirectory = HomeDirectory()
+    implementation: CurrentDirectory = CurrentDirectory()
     abstraction: OperationSystem = OperationSystem(implementation)
     print(client_code(abstraction))
 
-    implementation: CurrentDirectory = CurrentDirectory()
+    implementation: HomeDirectory = HomeDirectory()
     abstraction: Windows = Windows(implementation)
     print(client_code(abstraction))
