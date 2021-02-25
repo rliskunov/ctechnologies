@@ -15,7 +15,7 @@ class OperationSystem:
         self.implementation = implementation
 
     def operation(self) -> str:
-        return f"Platform: {platform.system()}" \
+        return f"Platform: {platform.platform()}" \
                f"\n\t{self.implementation.operation_implementation()}"
 
 
@@ -25,7 +25,7 @@ class Mac(OperationSystem):
     """
 
     def operation(self) -> str:
-        return f"Platform: {platform.system()}" \
+        return f"Platform: {platform.platform()}" \
                f"\n\t{self.implementation.operation_implementation()}"
 
 
