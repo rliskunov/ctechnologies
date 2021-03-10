@@ -1,79 +1,60 @@
 from socket import gethostname
+from abc import ABC, abstractmethod
 
 import psutil
 
 
-class Component:
+class IComponent(ABC):
     """
-    Базовый интерфейс Компонента определяет поведение, которое изменяется
-    декораторами.
+    Базовый интерфейс Компонента определяет поведение, которое изменяется декораторами.
     """
 
-    def operation(self) -> str:
-        pass
+    @abstractmethod
+    def operation(self):
+        """ операция выводит строку с различной информацией """
 
 
-class Hostname(Component):
+class CCHostname(IComponent):
     """
-    Конкретные Компоненты предоставляют реализации поведения по умолчанию. Может
-    быть несколько вариаций этих классов.
+    Конкретные Компоненты предоставляют реализации поведения по умолчанию. Может быть несколько вариаций этих классов.
     """
 
     def operation(self) -> str:
         return f"Hostname: {gethostname()}"
 
 
-class Decorator(Component):
+class IDecorator(IComponent):
     """
-    Базовый класс Декоратора следует тому же интерфейсу, что и другие
-    компоненты. Основная цель этого класса - определить интерфейс обёртки для
-    всех конкретных декораторов. Реализация кода обёртки по умолчанию может
-    включать в себя поле для хранения завёрнутого компонента и средства его
-    инициализации.
+    Базовый интерфейс Декоратора следует тому же интерфейсу, что и другие компоненты.
     """
 
-    _component: Component = None
+    component: IComponent = None
 
-    def __init__(self, component: Component) -> None:
-        self._component = component
+    def __init__(self, component: IComponent):
+        self.component = component
 
-    @property
-    def component(self) -> Component:
-        """
-        Декоратор делегирует всю работу обёрнутому компоненту.
-        """
+    def operation(self):
+        return self.component.operation()
 
-        return self._component
-
-    def operation(self) -> str:
-        return self._component.operation()
-
-
-class CPU(Decorator):
+# Конкретные Декораторы вызывают обёрнутый объект и изменяют его результат некоторым образом.
+class CDCpu(IDecorator):
     """
-    Конкретные Декораторы вызывают обёрнутый объект и изменяют его результат
-    некоторым образом.
+    Декоратор добавляет строки информации о процессоре
     """
 
-    def operation(self) -> str:
-        """
-        Декораторы могут вызывать родительскую реализацию операции, вместо того,
-        чтобы вызвать обёрнутый объект напрямую. Такой подход упрощает
-        расширение классов декораторов.
-        """
+    # Декораторы могут вызывать родительскую реализацию операции, вместо того, чтобы вызвать обёрнутый объект напрямую.
+    def operation(self):
+
         return f"{self.component.operation()}" \
                f"\nCPU:" \
                f"\n\tCount: {psutil.cpu_count()}" \
                f"\n\tUsage: {psutil.cpu_percent(interval=1)}"
 
 
-class Memory(Decorator):
-    """
-    Декораторы могут выполнять своё поведение до или после вызова обёрнутого
-    объекта.
-    """
+# Декоратор добавляющий тсроку с информацией о памяти
+class CDMemory(IDecorator):
 
-    def operation(self) -> str:
+    def operation(self):
         stats = psutil.virtual_memory()
         total = stats.total
         used = stats.used
@@ -85,18 +66,8 @@ class Memory(Decorator):
                f"\n\tUsed: {round(used / 1e+6, 3)}, MB"
 
 
-def client_code(component: Component) -> str:
-    """
-    Клиентский код работает со всеми объектами, используя интерфейс Компонента.
-    Таким образом, он остаётся независимым от конкретных классов компонентов, с
-    которыми работает.
-    """
-    return component.operation()
-
-
 if __name__ == "__main__":
-    hostname: Hostname = Hostname()
-    cpu: CPU = CPU(hostname)
-    memory: Memory = Memory(cpu)
-    decorator: str = client_code(memory)
-    print(decorator)
+    hostname: CCHostname = CCHostname()
+    cpu = CDCpu(hostname)
+    memory = CDMemory(cpu)
+    print(memory.operation())
