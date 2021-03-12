@@ -12,7 +12,7 @@ class ICommand(ABC):
         pass
 
 
-class SimpleCommand(ICommand):
+class ShowMethodName(ICommand):
     """
     Простая команда, способная выполнять простые операции самостоятельно.
     """
@@ -21,23 +21,22 @@ class SimpleCommand(ICommand):
         self.payload = payload
 
     def execute(self) -> str:
-        return (f"Простые команды способны на простые действия, напрмер печать: "
+        return (f"Выполнение метода: "
                 f"({self.payload})")
 
 
-class ComplexCommand(ICommand):
+class ExecuteMethod(ICommand):
     """
     Команда, делегирующая операции другим объектам, называемым «получателями».
     """
 
     # Сложные команды могут принимать один или несколько объектов-получателей вместе с любыми данными о контексте через конструктор.
-    def __init__(self, receiver: Receiver, a: str):
-
+    def __init__(self, receiver: Receiver, name: str):
         self.receiver = receiver
-        self.a = a
+        self.name = name
 
     def execute(self) -> str:
-        return  self.receiver.executeMethod(self.a)
+        return  self.receiver.executeMethod(self.name)
 
 
 class Receiver:
@@ -46,7 +45,7 @@ class Receiver:
     """
 
     def executeMethod(self, a: str) -> str:
-        return (f"\nРесивер получил сообщение: ({a}.)")
+        return (f"\nМетод {a} выполнен")
 
 
 class Invoker:
@@ -89,9 +88,9 @@ if __name__ == "__main__":
     """
 
     invoker = Invoker()
-    invoker.setFirstCommand(SimpleCommand("Say Hi!"))
+    invoker.setFirstCommand(ShowMethodName("Say Hi!"))
     receiver = Receiver()
-    invoker.setSecondCommand(ComplexCommand(
+    invoker.setSecondCommand(ExecuteMethod(
         receiver, "Send email", "Save report"))
 
     invoker.executeCommands()

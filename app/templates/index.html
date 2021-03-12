@@ -4,13 +4,17 @@
 {% block content %}
     <div class="bg-light p-5 rounded">
         <h1>Декоратор</h1>
-
+        <ul>
+            Выводит техническую информацию ЭВМ.
+        </ul>
         <p class="lead">{{ decorator | safe }} </p>
     </div>
     <br/>
     <div class="bg-light p-5 rounded">
         <h1>Команда</h1>
-
+        <ul>
+            Вызов метода, который получает список совершенных операций.
+        </ul>
         <p class="lead">{{ command | safe }}</p>
     </div>
 {% endblock %}

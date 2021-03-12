@@ -10,7 +10,7 @@ class IComponent(ABC):
     """
 
     @abstractmethod
-    def operation(self):
+    def ShowStats(self):
         """ операция выводит строку с различной информацией """
 
 
@@ -19,7 +19,7 @@ class CCHostname(IComponent):
     Конкретные Компоненты предоставляют реализации поведения по умолчанию. Может быть несколько вариаций этих классов.
     """
 
-    def operation(self) -> str:
+    def ShowStats(self):
         return f"Hostname: {gethostname()}"
 
 
@@ -33,8 +33,8 @@ class IDecorator(IComponent):
     def __init__(self, component: IComponent):
         self.component = component
 
-    def operation(self):
-        return self.component.operation()
+    def ShowStats(self):
+        return self.component.ShowStats()
 
 # Конкретные Декораторы вызывают обёрнутый объект и изменяют его результат некоторым образом.
 class CDCpu(IDecorator):
@@ -42,28 +42,39 @@ class CDCpu(IDecorator):
     Декоратор добавляет строки информации о процессоре
     """
 
-    # Декораторы могут вызывать родительскую реализацию операции, вместо того, чтобы вызвать обёрнутый объект напрямую.
-    def operation(self):
+    cpuCount = psutil.cpu_count()
+    cpuPercent = psutil.cpu_percent(interval=1)
 
-        return f"{self.component.operation()}" \
-               f"\nCPU:" \
-               f"\n\tCount: {psutil.cpu_count()}" \
-               f"\n\tUsage: {psutil.cpu_percent(interval=1)}"
+    def ShowCPU(self):
+        return f"\nCPU:" \
+               f"\n\tCount: {self.cpuCount}" \
+               f"\n\tUsage: {self.cpuPercent}"
+
+    # Декораторы могут вызывать родительскую реализацию операции, вместо того, чтобы вызвать обёрнутый объект напрямую.
+    def ShowStats(self):
+        return f"{self.component.ShowStats()}" \
+               f"{self.ShowCPU()}"
+
 
 
 # Декоратор добавляющий тсроку с информацией о памяти
 class CDMemory(IDecorator):
 
-    def operation(self):
-        stats = psutil.virtual_memory()
-        total = stats.total
-        used = stats.used
-        used_percent = stats.percent
-        return f"{self.component.operation()}" \
-               f"\n Memory:" \
-               f"\n\tPercent: {used_percent}," \
-               f"\n\tTotal: {round(total / 1e+6, 3)}, MB" \
-               f"\n\tUsed: {round(used / 1e+6, 3)}, MB"
+    stats = psutil.virtual_memory()
+    total = stats.total
+    used = stats.used
+    used_percent = stats.percent
+
+    def ShowMemory(self):
+        return f"\n Memory:" \
+               f"\n\tPercent: {self.used_percent}," \
+               f"\n\tTotal: {round(self.total / 1e+6, 3)}, MB" \
+               f"\n\tUsed: {round(self.used / 1e+6, 3)}, MB"
+
+    def ShowStats(self):
+        return f"{self.component.ShowStats()}" \
+               f"{self.ShowMemory()}"
+
 
 
 if __name__ == "__main__":

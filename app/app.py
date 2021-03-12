@@ -5,8 +5,8 @@ from flask import Flask, render_template
 from Command import (
     Invoker,
     Receiver,
-    SimpleCommand,
-    ComplexCommand
+    ShowMethodName,
+    ExecuteMethod
 )
 from decorator import (
     CCHostname,
@@ -26,13 +26,13 @@ def index():
     hostname: CCHostname = CCHostname()
     cpu: CDCpu = CDCpu(hostname)
     memory: CDMemory = CDMemory(cpu)
-    metrics: str = memory.operation()
+    metrics: str = memory.ShowStats()
 
     invoker = Invoker()
-    invoker.setFirstCommand(SimpleCommand("Проверка"))
+    invoker.setFirstCommand(ShowMethodName("Запрос операций"))
     receiver = Receiver()
-    invoker.setSecondCommand(ComplexCommand(
-        receiver, "Тестовый текст"))
+    invoker.setSecondCommand(ExecuteMethod(
+        receiver, "Запрос операций"))
 
     command = invoker.executeCommands()
     print(command)
