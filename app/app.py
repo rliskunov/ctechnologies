@@ -26,7 +26,7 @@ def index():
     hostname: Hostname = Hostname()
     cpu: CPU = CPU(hostname)
     memory: Memory = Memory(cpu)
-    metrics: str = memory.operation()
+    metrics: str = memory.show()
 
     if platform.system() == "Darwin":
         home: Mac = Mac(CurrentDirectory())

@@ -12,7 +12,7 @@ class OperationSystem:
     """
 
     def __init__(self, implementation: Implementation) -> None:
-        self.implementation = implementation
+        self.implementation: Implementation = implementation
 
     def operation(self) -> str:
         return f"Platform: {platform.platform()}" \

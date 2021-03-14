@@ -9,7 +9,7 @@ class Component:
     декораторами.
     """
 
-    def operation(self) -> str:
+    def show(self) -> str:
         pass
 
 
@@ -19,7 +19,7 @@ class Hostname(Component):
     быть несколько вариаций этих классов.
     """
 
-    def operation(self) -> str:
+    def show(self) -> str:
         return f"Hostname: {gethostname()}"
 
 
@@ -45,8 +45,8 @@ class Decorator(Component):
 
         return self._component
 
-    def operation(self) -> str:
-        return self._component.operation()
+    def show(self) -> str:
+        return self._component.show()
 
 
 class CPU(Decorator):
@@ -55,13 +55,13 @@ class CPU(Decorator):
     некоторым образом.
     """
 
-    def operation(self) -> str:
+    def show(self) -> str:
         """
         Декораторы могут вызывать родительскую реализацию операции, вместо того,
         чтобы вызвать обёрнутый объект напрямую. Такой подход упрощает
         расширение классов декораторов.
         """
-        return f"{self.component.operation()}" \
+        return f"{self.component.show()}" \
                f"\nCPU:" \
                f"\n\tCount: {psutil.cpu_count()}" \
                f"\n\tUsage: {psutil.cpu_percent(interval=1)}"
@@ -73,12 +73,12 @@ class Memory(Decorator):
     объекта.
     """
 
-    def operation(self) -> str:
+    def show(self) -> str:
         stats = psutil.virtual_memory()
         total = stats.total
         used = stats.used
         used_percent = stats.percent
-        return f"{self.component.operation()}" \
+        return f"{self.component.show()}" \
                f"\n Memory:" \
                f"\n\tPercent: {used_percent}," \
                f"\n\tTotal: {round(total / 1e+6, 3)}, MB" \
@@ -91,7 +91,7 @@ def client_code(component: Component) -> str:
     Таким образом, он остаётся независимым от конкретных классов компонентов, с
     которыми работает.
     """
-    return component.operation()
+    return component.show()
 
 
 if __name__ == "__main__":
