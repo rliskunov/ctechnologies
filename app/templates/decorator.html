@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %} Декоратор {% endblock %}
+{% block content %}
+    <div class="bg-light p-5 rounded">
+        <h1>Декоратор</h1>
+        <h2>Описание</h2>
+        <ul>
+            Мониторинг параметров сервера (CPU, Memory):
+            <li>Hostname - компонент</li>
+            <li>CPU и Memory - декораторы</li>
+        </ul>
+        <h2>Результаты применения</h2>
+        <p class="lead">{{ decorator | safe }} </p>
+    </div>
+{% endblock %}

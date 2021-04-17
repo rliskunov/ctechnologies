@@ -23,22 +23,34 @@ def html(text: str) -> str:
 
 @app.route('/')
 def index():
-    hostname: Hostname = Hostname()
-    cpu: CPU = CPU(hostname)
-    memory: Memory = Memory(cpu)
-    metrics: str = memory.show()
+    return render_template(
+        'index.html'
+    )
 
+
+@app.route('/bridge')
+def bridge():
     if platform.system() == "Darwin":
         home: Mac = Mac(CurrentDirectory())
         current: Mac = Mac(HomeDirectory())
-        bridge: str = f"{home.operation()}\n{current.operation()}"
+        result: str = f"{home.operation()}\n{current.operation()}"
     else:
         home: OperationSystem = OperationSystem(CurrentDirectory())
         current: OperationSystem = OperationSystem(HomeDirectory())
-        bridge: str = f"{home.operation()}\n{current.operation()}"
+        result: str = f"{home.operation()}\n{current.operation()}"
+    return render_template(
+        'bridge.html',
+        bridge=html(result)
+    )
+
+
+@app.route('/decorator')
+def decorator():
+    hostname: Hostname = Hostname()
+    cpu: CPU = CPU(hostname)
+    memory: Memory = Memory(cpu)
 
     return render_template(
-        'index.html',
-        decorator=html(metrics),
-        bridge=html(bridge),
+        'decorator.html',
+        decorator=html(memory.show())
     )
